@@ -1,0 +1,106 @@
+                                      <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        #box {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12em;
+        }
+
+        .button-group {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }   
+
+        #box button {
+            width: calc(50% - 10px);
+            height: 50px;
+            font-size: 1.2rem;
+        }
+
+        #nav {
+            position: fixed;
+            left: 10px; bottom: 10px;
+        }
+    </style>
+</head>
+<body>    
+    <div id="box">
+        <div id="clock">00:00:00</div>
+        <div class="button-group">
+            <button id="btn-control">Start</button>
+            <button id="btn-reset">Reset</button>
+        </div>
+    </div>
+    <div id="nav">
+        <button id="btn-timer">타이머</button>
+        <button id="btn-alert">알람</button>
+    </div>
+
+    <script>
+        window.addEventListener("load", e => {
+            let startTime = null;
+            let pauseTime = null;
+            let pause = true;
+
+            let $btnReset = document.querySelector("#btn-reset");
+            let $btnCon = document.querySelector("#btn-control");
+            let $clock = document.querySelector("#clock");
+
+            $btnCon.addEventListener("click", e => {
+                let text = $btnCon.innerText.toLowerCase();
+
+                if(text === "start"){
+                    if(startTime === null) {
+                        startTime = new Date().getTime();
+                    }
+                    else if(pauseTime !== null){
+                        startTime = (new Date().getTime() - (pauseTime - startTime));
+                    }
+
+                    pause = false;
+                    $btnCon.innerText = "Pause"
+                }
+
+                else if(text === "pause") {
+                    pause = true;
+                    pauseTime = new Date().getTime();
+                    $btnCon.innerText = "Start"
+                }
+            });
+
+            $btnReset.addEventListener("click", e => {
+                pause = true;
+                pauseTime = null;
+                startTime = null;
+                document.title = $clock.innerText = "00:00:00";
+                $btnCon.innerText = "Start";
+            });
+
+            function update(){
+                if(pause === false){
+                    let leave = parseInt((new Date().getTime() - startTime) / 1000);
+                    let hour = parseInt(leave / 3600);
+                    let min = parseInt(leave / 60) % 60;
+                    let sec = leave % 60;
+
+                    if(hour < 10) hour = "0" + hour;
+                    if(min < 10) min = "0" + min;
+                    if(sec < 10) sec = "0" + sec;
+
+                    document.title = $clock.innerText = `${hour}:${min}:${sec}`;
+                }
+
+                requestAnimationFrame(update);
+            }
+            update();
+        });
+    </script>
+</body>
+</html>

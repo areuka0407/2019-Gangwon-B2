@@ -1,0 +1,9 @@
+BENTLEY
+
+Continental Flying Spur
+차제형식 : 4도어 세단
+굴림방식 : AWD
+엔진 : V8 3993
+변속시 : 8A
+출력 : 528/6000
+토크 : 69.3/1700
