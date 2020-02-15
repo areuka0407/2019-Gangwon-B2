@@ -39,16 +39,21 @@ class App {
         this.$btnDelete = this.$root.querySelector("#btn-delete");
 
         this.canvasList = [];
-        for(let i = 0; i < 4; i++){
-            let item = new Canvas(this, {type: i, guide: false}).toImage();
-            item.addEventListener("click", () => this.reset(i));
-            item.addEventListener("load", () => {
+        
+        new Promise((res, rej) => {
+            for(let i = 0; i <= 3; i++){
+                let item = new Canvas(this, {type: i, guide: false}).toImage(false);
                 setTimeout(() => {
                     this.fadeAppend(this.$typeList, item);
+                    if(i === 3) res();
                 }, 200 * i);
-            });
-        }
-        this.reset(0);
+                item.addEventListener("click", () => this.reset(i));
+                item.onerror = () => rej();
+            }
+        }).then(() => {
+            this.restore();
+            this.update();
+        });
 
         /* Document Node init
         */
@@ -67,6 +72,7 @@ class App {
             }
         });
 
+        let auto_increment = 0;
         this.$btnSave.addEventListener("click", e => {
             let obj = {};
             obj.type = this.current.type;
@@ -75,6 +81,16 @@ class App {
             obj.image.addEventListener("click", () => {
                 let new_canvas = new Canvas(this, obj);
                 this.changeCanvas(new_canvas);
+            });
+            console.log(obj.image.querySelector(".close-btn"));
+            obj.image.querySelector(".close-btn").addEventListener("click", e => {
+                let idx = this.saveList.findIndex(item => item === obj);
+                if(idx >= 0){
+                    this.fadeRemove(obj.image);
+                    this.saveList.splice(idx, 1);
+                    this.update();
+                    e.stopPropagation();
+                }
             });
 
             this.saveList.push(obj);
@@ -87,9 +103,6 @@ class App {
         this.$btnDelete.addEventListener("click", e => {
             this.current.boothList = [];
         });
-
-        this.restore();
-        this.update();
     }
 
     get selectedColor(){
@@ -138,15 +151,25 @@ class App {
         if(_saveList){
             _saveList = JSON.parse(_saveList);
             this.saveList = _saveList.map((item, i) => {
+                let new_canvas = new Canvas(this, item);
                 let obj = {};
                 obj.type = item.type;
                 obj.boothList = item.boothList;
-                obj.image = document.createElement("img");
-                obj.image.src = item.image;
+                obj.image = new_canvas.toImage();
                 obj.image.addEventListener("click", () => {
-                    let new_canvas = new Canvas(this, item);
                     this.changeCanvas(new_canvas);
                 });
+                obj.image.querySelector(".close-btn").addEventListener("click", e => {
+                    let idx = this.saveList.findIndex(item => item === obj);
+                    if(idx >= 0){
+                        this.fadeRemove(obj.image);
+                        this.saveList.splice(idx, 1);
+                        this.update();
+                        e.stopPropagation();
+                    }
+                });
+
+                
                 obj.image.addEventListener("load", () => {
                     setTimeout(() => {
                         this.fadeAppend(this.$saveList, obj.image);
@@ -163,6 +186,7 @@ class App {
             let new_canvas = new Canvas(this, _current);
             this.changeCanvas(new_canvas);
         }
+        else this.reset(0);
     }
 
     reset(type = 0){
@@ -181,6 +205,15 @@ class App {
         }, 100);
     }
 
+    fadeRemove($target){
+        $target.style.transition = "0.5s";
+        $target.style.opacity = "0";
+        $target.style.transform = "translate(20px, -10px)";
+        setTimeout(() => {
+            $target.remove();
+        }, 500);
+    }
+
     changeCanvas(new_canvas, dir = "left"){
         if(this.current){
             let st = this.current.$root.style;
@@ -193,12 +226,12 @@ class App {
     
                 this.current = new_canvas;
                 this.fadeAppend(this.$contents, new_canvas.$root);
+                this.save();
             }, 500);   
         }
         else {
             this.current = new_canvas;
                 this.fadeAppend(this.$contents, new_canvas.$root);
-        }
-        
+        }       
     }
 }

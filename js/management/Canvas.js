@@ -179,18 +179,17 @@ class Canvas {
     /**
      * 해당 캔버스를 이미지 노드로 변경해 반환한다.
      */
-    toImage(){
+    toImage(closeable = true){
         let temp = this.guide;
         this.guide = false;
 
         this.calcSize();
         this.update();
 
-        let img = document.createElement("img");
-        img.src = this.$root.toDataURL("image/png");
-        img.alt = "booth-map";
-        img.width = 300;
-        img.dataset.type = this.type;
+        let img = document.createElement("div");
+        img.classList.add("img");
+        img.innerHTML = `<img src="${this.$root.toDataURL("image/png")}" alt="boot-image">`;
+        img.innerHTML += closeable ? `<button class="close-btn">×</button>` : "";
 
         this.guide = temp;
 
@@ -308,11 +307,19 @@ class Canvas {
         let temp, offset;
         let moveTarget = null;
         this.$root.addEventListener("mousedown", e => {
-            if(!this.app.selected) return toast("부스를 먼저 선택해 주세요!", "bg-danger");    
-
             let [x, y] = temp = this.takeXY(e);
             moveTarget = this.boothList.find(item => item.include({x, y}));
             offset = moveTarget ? [ x - moveTarget.x, y - moveTarget.y] : [];
+            
+            if(!moveTarget && !this.app.selected){
+                temp = null;
+                return toast("부스를 먼저 선택해 주세요!", "bg-danger");    
+            }
+            else if(moveTarget) {
+                let changeEvent = new InputEvent("change");
+                this.app.$selBooth.querySelector("option[value='"+ moveTarget.text +"']").selected = true;
+                this.app.$selBooth.dispatchEvent(changeEvent);
+            }
         });
 
         window.addEventListener("mousemove", e => {
@@ -370,6 +377,7 @@ class Canvas {
             if(new_booth.check(_guideRect)){
                 this.boothList.push(new_booth);
                 this.app.$outSize.innerText = new_booth.bl_w * new_booth.bl_h;
+                this.app.save();
             }
 
 
@@ -390,6 +398,8 @@ class Canvas {
             
             temp = null;
             moveTarget = null;
+
+            this.app.save();
         });
     }
 
