@@ -55,7 +55,7 @@ body { overflow-x: hidden; }
 /* Header
 */
 
-#top { height: 50px; background-color: var(--white); color: var(--black); border-bottom: 1px solid #ddd; }
+#top { background-color: var(--white); color: var(--black); border-bottom: 1px solid #ddd; }
 #top .icons button {
     display: inline-block; width: 30px; height: 30px;
     border-radius: 50%; border: 1px solid var(--black); color: var(--black);
@@ -361,7 +361,7 @@ body { overflow-x: hidden; }
 #management .save-list,
 #management .type-list {
     max-height: 100%;
-    overflow-x: visible;
+    overflow-x: hidden;
     overflow-y: auto;
 }
 
@@ -378,9 +378,28 @@ body { overflow-x: hidden; }
 }
 
 
- #management .save-list img,
- #management .type-list img {
-     width: calc(100% - 20px); margin: 10px; cursor: pointer;
+ #management .save-list .img,
+ #management .type-list .img {
+     width: calc(100% - 20px); 
+     margin: 10px; cursor: pointer;
      box-shadow: 0 1px 3px 1px #00000020;
      border: 1px solid #ddd;
-}
+     position: relative; overflow: hidden;
+ }
+ 
+
+ #management .save-list img,
+ #management .type-list img {
+     width: 100%;
+ }
+ #management .close-btn {
+    position: absolute; right: 0; top: 0;
+    width: 30px; height: 30px; color: #fff;
+    border: 0; background-color: var(--blue);
+    transform: translate(50%, -50%); opacity: 0;
+    transition: transform 0.2s, opacity 0.2s;
+ }
+ #management .img:hover > .close-btn {
+     transition: 0.3s; transform: translate(0, 0);
+     opacity: 1;
+ }
