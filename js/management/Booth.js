@@ -1,7 +1,5 @@
 class Booth {
     constructor(canvas, {text, x, y, width, height}){
-        console.log(...arguments);
-
         this.canvas = canvas;
         this.text = text;
         this.color = this.canvas.app.color[text];

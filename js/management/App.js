@@ -73,7 +73,7 @@ class App {
             obj.image = this.current.toImage();
             obj.boothList = this.current.boothList.map(({x, y, width, height, text}) => ({x, y, width, height, text}))
             obj.image.addEventListener("click", () => {
-                let new_canvas = new Canvas(this, {type: obj.type, boothList: obj.boothList});
+                let new_canvas = new Canvas(this, obj);
                 this.changeCanvas(new_canvas);
             });
 
@@ -88,6 +88,7 @@ class App {
             this.current.boothList = [];
         });
 
+        this.restore();
         this.update();
     }
 
@@ -110,16 +111,21 @@ class App {
 
     save(){
         // 저장된 데이터
-        let _saveList = JSON.stringify(this.saveList.map(x => {
-            x.image = x.image.src;
-            return x;
-        }));
+        let _saveList = this.saveList.map(x => {
+            let src = x.image.src;
+            let obj = JSON.parse(JSON.stringify(x));
+            obj.image = src;
+
+            return obj;
+        });
+        _saveList = JSON.stringify(_saveList);
 
         // 현재 화면
         let _current = {
             type: this.current.type,
             boothList: this.current.boothList.map(({x, y, width, height, text}) => ({x, y, width, height, text}))
         };
+        _current = JSON.stringify(_current);
 
         localStorage.setItem("saveList", _saveList);
         localStorage.setItem("current", _current);
@@ -128,7 +134,35 @@ class App {
     restore(){
         let _saveList = localStorage.getItem("saveList");
         let _current = localStorage.getItem("current");
+
+        if(_saveList){
+            _saveList = JSON.parse(_saveList);
+            this.saveList = _saveList.map((item, i) => {
+                let obj = {};
+                obj.type = item.type;
+                obj.boothList = item.boothList;
+                obj.image = document.createElement("img");
+                obj.image.src = item.image;
+                obj.image.addEventListener("click", () => {
+                    let new_canvas = new Canvas(this, item);
+                    this.changeCanvas(new_canvas);
+                });
+                obj.image.addEventListener("load", () => {
+                    setTimeout(() => {
+                        this.fadeAppend(this.$saveList, obj.image);
+                    }, 200 * i);
+                });
+                
+                return obj;
+            });
+            console.log(this.saveList[0]);
+        }
         
+        if(_current){
+            _current = JSON.parse(_current);
+            let new_canvas = new Canvas(this, _current);
+            this.changeCanvas(new_canvas);
+        }
     }
 
     reset(type = 0){

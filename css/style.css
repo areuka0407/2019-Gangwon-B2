@@ -360,7 +360,7 @@ body { overflow-x: hidden; }
 
 #management .save-list,
 #management .type-list {
-    max-height: 550px;
+    max-height: 100%;
     overflow-x: visible;
     overflow-y: auto;
 }
