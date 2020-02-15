@@ -296,7 +296,7 @@ body { overflow-x: hidden; }
 
 #banner .list { width: 495px; height: 184px; position: relative; overflow: hidden; }
 
-#banner .list img { position: absolute; top: 0; animation: banner 16s infinite; }
+#banner .list img { position: absolute; top: 0; animation: banner 16s infinite; width: 100%; }
 
 #banner .list img:nth-child(1) { animation-delay: -4s; }
 #banner .list img:nth-child(2) { animation-delay: 0s; }
@@ -327,13 +327,12 @@ body { overflow-x: hidden; }
 #footer .icons span:hover { opacity: 0.5; transition: 0.5s; }
 #footer .map { 
     max-width: 100%; height: 200px; background-image: url(../images/map.jpg);  
-    background-size: auto 100%; background-position: center center;
+    background-size: cover; background-position: center center;
     box-shadow: inset 0 0 10px 8px #00000050; cursor: pointer;
     transition: transform 0.3s, background-size 0.3s;
 }
 #footer .map:hover {
-    transform: scale(1.05); background-size: auto 150%;
-    transition: 0.8s;
+    transform: scale(1.05);  transition: 0.8s;;
 }
 
 
@@ -368,11 +367,20 @@ body { overflow-x: hidden; }
     position: fixed; right: 0; bottom: 0; z-index: 1001;
     margin: 20px; padding: 30px;
     max-width: 500px; background-color: #fff;
-    border: 1px solid #ddd; border-radius: 0.25em;
+    border: 1px solid #ddd; 
     box-shadow: 0 1px 3px 1px #00000020;
-    opacity: 0.5; transition: opacity 0.7s;
+    transform: translateY(calc(100% + 20px));
  }
- #manage-form:hover { opacity: 1; transition: opacity 0.3s; }
+ #manage-form > label {
+    position: absolute; right: 0; top: 0; margin-top: -50px;
+    width: 50px; height: 50px; background-color: var(--blue);
+ }
+ #manage-form > label > svg { position: absolute; left: 50%; top: 50%; color: #fff; transform: translate(-50%, -50%); display: none; }
+ #form-fade:checked ~ #manage-form  { transform: translateY(0); transition: 0.4s; }
+#form-fade:checked ~ #manage-form .hide  { display: block; }
+#form-fade:not(:checked) ~ #manage-form .show  { display: block; }
+      
+
 
  #booth-color {
     width: calc(1.5em + .75rem + 2px);
