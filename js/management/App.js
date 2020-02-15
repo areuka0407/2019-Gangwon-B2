@@ -77,7 +77,7 @@ class App {
             let obj = {};
             obj.type = this.current.type;
             obj.image = this.current.toImage();
-            obj.boothList = this.current.boothList.map(({x, y, width, height, text}) => ({x, y, width, height, text}))
+            obj.boothList = this.current.boothList.map(({text, bl_x, bl_y, bl_w, bl_h}) => ({text, bl_x, bl_y, bl_w, bl_h}))
             obj.image.addEventListener("click", () => {
                 let new_canvas = new Canvas(this, obj);
                 this.changeCanvas(new_canvas);
@@ -136,7 +136,7 @@ class App {
         // 현재 화면
         let _current = {
             type: this.current.type,
-            boothList: this.current.boothList.map(({x, y, width, height, text}) => ({x, y, width, height, text}))
+            boothList: this.current.boothList.map(({text, bl_x, bl_y, bl_w, bl_h}) => ({text, bl_x, bl_y, bl_w, bl_h}))
         };
         _current = JSON.stringify(_current);
 

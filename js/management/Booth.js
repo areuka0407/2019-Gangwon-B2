@@ -1,22 +1,27 @@
 class Booth {
-    constructor(canvas, {text, x, y, width, height}){
+    /**
+     * 
+     * @param {Canvas} canvas 
+     * @param {Object} param1 
+     */
+    constructor(canvas, {text, bl_x, bl_y, bl_w, bl_h}){
         this.canvas = canvas;
         this.text = text;
         this.color = this.canvas.app.color[text];
         this.opacity = 1;
 
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        this.bl_x = bl_x;
+        this.bl_y = bl_y;
+        this.bl_w = bl_w;
+        this.bl_h = bl_h;
 
-        this.bl_x = this.canvas.px2bl(x);
-        this.bl_y = this.canvas.px2bl(y);
-        this.bl_w = this.canvas.px2bl(width, "floor");
-        this.bl_h = this.canvas.px2bl(height, "floor");
+        this.x = canvas.bl2px(bl_x, "floor");
+        this.y = canvas.bl2px(bl_y, "floor");
+        this.width = canvas.bl2px(bl_w, "ceil");
+        this.height = canvas.bl2px(bl_h, "ceil");
     }
 
-    include({x, y, width = this.canvas.BLOCK - 0.5, height = this.canvas.BLOCK - 0.5}){
+    include({x, y, width = this.canvas.BLOCK * 0.5, height = this.canvas.BLOCK * 0.5}){
         return x + width > this.x 
             && x < this.x + this.width 
             && y + height > this.y 

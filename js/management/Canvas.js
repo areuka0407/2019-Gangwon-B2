@@ -84,24 +84,27 @@ class Canvas {
 
         
         this.boothList && this.boothList.forEach(item => {
-            item.x = this.bl2px(item.bl_x);
-            item.y = this.bl2px(item.bl_y);
-            item.width = this.bl2px(item.bl_w);
-            item.height = this.bl2px(item.bl_h);
+            item.x = this.bl2px(item.bl_x, "round");
+            item.y = this.bl2px(item.bl_y, "round");
+            item.width = this.bl2px(item.bl_w, "round");
+            item.height = this.bl2px(item.bl_h, "round");
         });
     }
 
     /**
      * 픽셀을 블럭 단위로 변경한다.
-     * @param {number} pixel 
+     * ("floor": 우측 하단 | "ceil": 좌측 상단 | "round": 위치마다 반올림)
+     * @param {number} block 
+     * @param {string} 기준점을 변경할 수 있다. 
      */
-    px2bl(pixel){
-        return Math.ceil(pixel / this.BLOCK);
+    px2bl(pixel, method = "ceil"){
+        return Math[method](pixel / this.BLOCK);
     }
     /**
-     * 블럭을 픽셀 단위로 변경한다. 기준점은 블럭 내 우측 하단.
+     * 블럭을 픽셀 단위로 변경한다.  
+     * ("floor": 우측 하단 | "ceil": 좌측 상단 | "round": 위치마다 반올림)
      * @param {number} block 
-     * @param {string} 기준점을 변경할 수 있다. ("floor": 우측 하단 | "ceil": 좌측 상단 | "round": 위치마다 반올림)
+     * @param {string} 기준점을 변경할 수 있다. 
      */
     bl2px(block, method = "floor"){
         return Math[method](block) * this.BLOCK;
@@ -346,6 +349,7 @@ class Canvas {
                 this.guideRect.height = this.getContain(Math.max(y, my), "ceil") - Y;
             }
         });
+        // 부스 생성
         window.addEventListener("mouseup", e => {
             if(!temp || e.which !== 1 || moveTarget) return;
 
@@ -369,9 +373,16 @@ class Canvas {
             
             // 객체 생성
             let {x, y, width, height} = _guideRect;
+            let bl_x = this.px2bl(x, "round");
+            let bl_y = this.px2bl(y, "round");
+            let bl_w = this.px2bl(width, "round");
+            let bl_h = this.px2bl(height, "round");
+
+            console.log(width / this.BLOCK, bl_w);
+            
             let new_booth = new Booth(this, {
                 text: this.app.selected,
-                x, y, width, height
+                bl_x, bl_y, bl_w, bl_h
             });
             
             if(new_booth.check(_guideRect)){
@@ -379,9 +390,8 @@ class Canvas {
                 this.app.$outSize.innerText = new_booth.bl_w * new_booth.bl_h;
                 this.app.save();
             }
-
-
         });
+        // 부스 이동
         window.addEventListener("mouseup", e => {
             if(e.which !== 1 || !moveTarget || !temp) return;
 
